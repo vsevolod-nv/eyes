@@ -1,0 +1,7 @@
+torch>=2.6
+numpy
+Pillow
+opencv-python-headless
+matplotlib
+tqdm
+jupyterlab
