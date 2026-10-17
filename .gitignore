@@ -54,3 +54,6 @@ vendor/
 local/
 secrets/
 *.local.*
+
+picture-quality-analysis/pictures/
+picture-quality-analysis/frames.json

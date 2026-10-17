@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<title>Разметка кадров</title>
+<style>
+body { margin: 24px; background: #181818; color: #eee; font: 16px system-ui; text-align: center; }
+button { padding: 10px 20px; font: inherit; }
+img { max-width: 100%; }
+</style>
+<input id="filename" value="frames.json">
+<button id="open">Открыть JSON</button>
+<p>1 — чёткий · 2 — нечёткий</p>
+<p id="status">Укажите имя JSON-файла</p>
+<img id="frame">
+<script>
+const open = document.querySelector('#open');
+const status = document.querySelector('#status');
+const image = document.querySelector('#frame');
+let filename, frames, current, ready = false;
+
+async function next() {
+    current = frames.find(frame => frame.quality_ok === null);
+    if (!current) {
+        image.removeAttribute('src');
+        status.textContent = `Готово: ${frames.length} / ${frames.length}`;
+        return;
+    }
+    status.textContent = `${frames.filter(frame => frame.quality_ok !== null).length} / ${frames.length} · ${current.file}`;
+    image.src = `pictures/${encodeURIComponent(current.file)}`;
+    await image.decode();
+    ready = true;
+}
+
+open.onclick = async () => {
+    filename = document.querySelector('#filename').value;
+    frames = await (await fetch(filename)).json();
+    document.querySelector('#filename').disabled = true;
+    open.disabled = true;
+    await next();
+};
+
+document.onkeydown = async event => {
+    if (!ready || event.repeat || !['1', '2'].includes(event.key)) return;
+    event.preventDefault();
+    ready = false;
+    current.quality_ok = event.key === '1';
+    await fetch(filename, {method: 'POST', body: JSON.stringify(frames, null, 2)});
+    await next();
+};
+</script>
+</html>
