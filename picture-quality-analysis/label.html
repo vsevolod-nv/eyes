@@ -9,7 +9,7 @@ img { max-width: 100%; }
 </style>
 <input id="filename" value="frames.json">
 <button id="open">Открыть JSON</button>
-<p>1 — чёткий · 2 — нечёткий</p>
+<p>1 — ок · 2 — неизвестно · 3 — неок</p>
 <p id="status">Укажите имя JSON-файла</p>
 <img id="frame">
 <script>
@@ -40,10 +40,10 @@ open.onclick = async () => {
 };
 
 document.onkeydown = async event => {
-    if (!ready || event.repeat || !['1', '2'].includes(event.key)) return;
+    if (!ready || event.repeat || !['1', '2', '3'].includes(event.key)) return;
     event.preventDefault();
     ready = false;
-    current.quality_ok = event.key === '1';
+    current.quality_ok = {'1': true, '2': 'unknown', '3': false}[event.key];
     await fetch(filename, {method: 'POST', body: JSON.stringify(frames, null, 2)});
     await next();
 };
